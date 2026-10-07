@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#4A1024">
+  <title>Encuesta IA · UVP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wine: #6d1832;
+      --wine-deep: #3c0d1c;
+      --wine-soft: #8d2a48;
+      --gold: #e0b15a;
+      --gold-deep: #b8873a;
+      --cream: #f4efe6;
+      --paper: #fffdf9;
+      --ink: #24161c;
+      --muted: #6e5962;
+      --line: #e7dcd0;
+      --ok: #1c7a4d;
+      --danger: #9d243c;
+      --shadow: 0 18px 50px rgba(60, 13, 28, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: "Outfit", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 420px at 100% -10%, rgba(224, 177, 90, 0.28), transparent 55%),
+        radial-gradient(700px 380px at -10% 110%, rgba(109, 24, 50, 0.16), transparent 50%),
+        var(--cream);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      min-height: 100vh;
+    }
+
+    .hero {
+      position: relative;
+      color: #fff8ef;
+      background:
+        linear-gradient(165deg, rgba(224, 177, 90, 0.16), transparent 42%),
+        linear-gradient(180deg, var(--wine) 0%, var(--wine-deep) 100%);
+      padding: 2.4rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border: 40px solid rgba(224, 177, 90, 0.14);
+      border-radius: 50%;
+      right: -120px;
+      bottom: 80px;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin: 0 0 1rem;
+    }
+
+    .hero h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 560;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      line-height: 1.05;
+      margin: 0 0 1rem;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 248, 239, 0.86);
+      line-height: 1.5;
+      max-width: 34ch;
+    }
+
+    .meta {
+      margin-top: auto;
+      padding-top: 2rem;
+      display: grid;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .meta div {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.95rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 0.4rem;
+      border-radius: 50%;
+      background: var(--gold);
+      flex: none;
+    }
+
+    main {
+      padding: 1.5rem 1.1rem 2.5rem;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 1.35rem 1.15rem 1.2rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 0.85rem;
+    }
+
+    .step-label {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--wine);
+    }
+
+    .count {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .track {
+      height: 8px;
+      background: #f0e6da;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1.3rem;
+    }
+
+    .track > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--wine), var(--gold));
+      border-radius: inherit;
+      transition: width 0.35s ease;
+    }
+
+    .step { display: none; animation: rise 0.35s ease; }
+    .step.active { display: block; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(1.55rem, 2.4vw, 2rem);
+      font-weight: 560;
+      margin: 0 0 0.35rem;
+    }
+
+    .lead {
+      margin: 0 0 1.15rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .field { margin-bottom: 1rem; }
+    label.lbl, legend {
+      display: block;
+      font-weight: 650;
+      margin-bottom: 0.45rem;
+    }
+
+    .hint { color: var(--muted); font-weight: 500; font-size: 0.92rem; }
+
+    input[type="number"], input[type="text"], select, textarea {
+      width: 100%;
+      font: inherit;
+      color: inherit;
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 0.85rem 0.9rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--wine-soft);
+      box-shadow: 0 0 0 4px rgba(109, 24, 50, 0.12);
+    }
+
+    .error-text {
+      display: none;
+      color: var(--danger);
+      font-size: 0.88rem;
+      margin-top: 0.35rem;
+    }
+
+    .invalid .error-text { display: block; }
+    .invalid input, .invalid select, .invalid textarea,
+    .invalid .choice-grid {
+      border-color: var(--danger);
+    }
+
+    .choice-grid, .scale {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .choice {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      border-radius: 14px;
+      padding: 0.75rem 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+
+    .choice:hover { border-color: #d8c3ae; }
+    .choice:has(input:checked) {
+      border-color: var(--wine);
+      background: #fff5f7;
+    }
+
+    .choice input { accent-color: var(--wine); width: 1.05rem; height: 1.05rem; }
+
+    .scale {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .scale .choice {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.25rem;
+      min-height: 76px;
+      justify-content: center;
+      padding: 0.55rem 0.3rem;
+    }
+
+    .scale strong { font-size: 1.05rem; }
+    .scale small { color: var(--muted); line-height: 1.2; }
+
+    .group-title {
+      margin: 1rem 0 0.5rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--wine-soft);
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .chip input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chip span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      font-weight: 600;
+      transition: 0.15s ease;
+    }
+
+    .chip:has(input:checked) span {
+      background: var(--wine);
+      color: #fff8ef;
+      border-color: var(--wine);
+    }
+
+    .chip:has(input:disabled) span {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .chip:has(input:focus-visible) span {
+      box-shadow: 0 0 0 4px rgba(109, 24, 50, 0.15);
+    }
+
+    .counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+      background: #fff6e8;
+      color: #7a5414;
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .note {
+      background: #f8f1e8;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .hidden { display: none !important; }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-top: 1.2rem;
+    }
+
+    button {
+      font: inherit;
+      font-weight: 700;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.9rem 1.2rem;
+      cursor: pointer;
+      min-height: 48px;
+    }
+
+    .btn-next, .btn-send {
+      background: var(--wine);
+      color: #fff8ef;
+      margin-left: auto;
+    }
+
+    .btn-next:hover, .btn-send:hover { background: var(--wine-deep); }
+
+    .btn-back {
+      background: transparent;
+      color: var(--wine);
+      border: 1.5px solid #e4d3c4;
+    }
+
+    button:disabled { opacity: 0.6; cursor: wait; }
+
+    .banner {
+      display: none;
+      margin-bottom: 0.9rem;
+      background: #fff4d8;
+      color: #6a4a12;
+      border-radius: 14px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.92rem;
+    }
+
+    .banner.show { display: block; }
+
+    .review {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .review article {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.7rem 0.85rem;
+    }
+
+    .review small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .review strong { color: var(--ink); font-weight: 650; }
+
+    .thanks {
+      display: none;
+      text-align: center;
+      padding: 2rem 0.5rem 1rem;
+    }
+
+    .thanks.show { display: block; }
+    .mark {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e8f6ee;
+      color: var(--ok);
+      font-size: 2rem;
+    }
+
+    .hp {
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+      height: 0;
+    }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .hero { padding: 1.3rem 1.15rem 1.15rem; }
+      .hero h1 { max-width: none; font-size: 1.85rem; }
+      .hero .blurb, .meta { display: none; }
+      .card { border-radius: 22px; padding: 1.1rem 0.9rem 1rem; }
+      .scale { grid-template-columns: 1fr; }
+      .scale .choice {
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        min-height: 48px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .step { animation: none; }
+      .track > span { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="hero">
+      <p class="eyebrow">UVP · Estadística</p>
+      <h1>¿Qué IA conoces y cuál usas?</h1>
+      <p class="blurb">Cuestionario anónimo para estudiantes de la Universidad del Valle de Puebla. Toma unos 5 minutos y no pide tu nombre ni tu correo.</p>
+      <div class="meta">
+        <div><span class="dot"></span><span>Conocimiento y frecuencia de uso de herramientas de IA.</span></div>
+        <div><span class="dot"></span><span>Respuestas para comparar por carrera y semestre.</span></div>
+        <div><span class="dot"></span><span>Participación voluntaria. Puedes omitir la edad.</span></div>
+      </div>
+    </aside>
+
+    <main>
+      <form id="encuesta" class="card" method="POST" action="https://formspree.io/f/xwlvvbov" novalidate>
+        <div id="config-banner" class="banner">
+          Falta el ID de Formspree. En el script de este archivo, reemplaza <strong>xxxxxxxx</strong> en <strong>FORMSPREE_ID</strong> por el ID de tu formulario.
+        </div>
+
+        <div id="form-ui">
+          <div class="topbar">
+            <p class="step-label" id="step-label">Perfil</p>
+            <p class="count" id="step-count">Paso 1 de 5</p>
+          </div>
+          <div class="track" aria-hidden="true"><span id="bar"></span></div>
+
+          <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+          <input type="hidden" name="_subject" value="Encuesta IA - estudiantes UVP">
+          <input type="hidden" name="n_conocidas" id="n_conocidas" value="0">
+          <input type="hidden" name="n_usadas" id="n_usadas" value="0">
+          <input type="hidden" name="freq_uso_texto" id="freq_uso_texto" value="Nunca">
+          <input type="hidden" name="uso_academico_texto" id="uso_academico_texto" value="">
+
+          <section class="step active" data-step="0" data-title="Perfil">
+            <h2>Cuéntanos tu perfil</h2>
+            <p class="lead">Sirve para comparar resultados por carrera y semestre. No identifica quién eres.</p>
+
+            <div class="field" data-required="carrera">
+              <label class="lbl" for="carrera">1. ¿Qué carrera estudias?</label>
+              <select id="carrera" name="carrera" required>
+                <option value="">Selecciona tu carrera</option>
+                <option>Administración de Empresas</option>
+                <option>Arquitectura</option>
+                <option>Ciencias de la Comunicación</option>
+                <option>Contaduría Pública</option>
+                <option>Criminología</option>
+                <option>Derecho</option>
+                <option>Diseño Gráfico</option>
+                <option>Enfermería</option>
+                <option>Fisioterapia</option>
+                <option>Gastronomía</option>
+                <option>Ingeniería Civil</option>
+                <option>Ingeniería Industrial</option>
+                <option>Ingeniería en Sistemas Computacionales</option>
+                <option>Ingeniería Mecatrónica</option>
+                <option>Medicina</option>
+                <option>Mercadotecnia</option>
+                <option>Negocios Internacionales</option>
+                <option>Nutrición</option>
+                <option>Odontología</option>
+                <option>Psicología</option>
+                <option>Turismo</option>
+                <option value="Otra">Otra</option>
+              </select>
+              <p class="error-text">Elige una carrera.</p>
+            </div>
+
+            <div class="field hidden" id="carrera-otra-wrap">
+              <label class="lbl" for="carrera_otra">Escribe el nombre de tu carrera</label>
+              <input id="carrera_otra" name="carrera_otra" type="text" maxlength="80" placeholder="Ejemplo: Pedagogía">
+              <p class="error-text">Escribe el nombre de tu carrera.</p>
+            </div>
+
+            <div class="field" data-required="semestre">
+              <label class="lbl" for="semestre">2. ¿En qué semestre vas?</label>
+              <select id="semestre" name="semestre" required>
+                <option value="">Selecciona</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+                <option>9</option><option>10</option><option>11</option><option>12 o más</option>
+              </select>
+              <p class="error-text">Elige tu semestre.</p>
+            </div>
+
+            <div class="field">
+              <label class="lbl" for="edad">3. Edad <span class="hint">(opcional)</span></label>
+              <input id="edad" name="edad" type="number" inputmode="numeric" min="15" max="80" placeholder="Años">
+              <p class="error-text">Escribe una edad entre 15 y 80, o déjala en blanco.</p>
+            </div>
+          </section>
+
+          <section class="step" data-step="1" data-title="Conocimiento">
+            <h2>Lo que conoces</h2>
+            <p class="lead">Conocer una herramienta significa que sabes que existe, aunque no la uses.</p>
+
+            <fieldset class="field" data-required="familiaridad_ia">
+              <legend>4. ¿Qué tan familiarizado o familiarizada estás con las herramientas de IA?</legend>
+              <div class="scale" id="familiaridad">
+                <label class="choice"><input type="radio" name="familiaridad_ia" value="1" required><strong>1</strong><small>Nada</small></label>
+                <label class="choice"><input type="radio" name="familiaridad_ia" value="2"><strong>2</strong><small>Poco</small></label>
+                <label class="choice"><input type="radio" name="familiaridad_ia" value="3"><strong>3</strong><small>Regular</small></label>
+                <label class="choice"><input type="radio" name="familiaridad_ia" value="4"><strong>4</strong><small>Bastante</small></label>
+                <label class="choice"><input type="radio" name="familiaridad_ia" value="5"><strong>5</strong><small>Mucho</small></label>
+              </div>
+              <p class="error-text">Elige una opción del 1 al 5.</p>
+            </fieldset>
+
+            <fieldset class="field" data-required="herramientas_conocidas">
+              <legend>5. Marca las herramientas de IA que conoces</legend>
+              <p class="hint" style="margin-top:0">Puedes marcar varias. Si no reconoces ninguna de la lista, elige “Ninguna de la lista”.</p>
+              <div id="conocidas"></div>
+              <p class="counter" id="contador-conocidas">Conoces 0 de la lista</p>
+              <p class="error-text">Marca al menos una herramienta o “Ninguna de la lista”.</p>
+            </fieldset>
+
+            <div class="field">
+              <label class="lbl" for="otra_conocida">6. ¿Conoces alguna otra que no esté en la lista? <span class="hint">(opcional)</span></label>
+              <input id="otra_conocida" name="otra_conocida" type="text" maxlength="80" placeholder="Escribe el nombre">
+            </div>
+          </section>
+
+          <section class="step" data-step="2" data-title="Uso">
+            <h2>Cómo las usas</h2>
+            <p class="lead" id="uso-lead">Solo puedes marcar como usadas las que indicaste que conoces.</p>
+            <div id="uso-vacio" class="note hidden">No marcaste herramientas conocidas. Registraremos que hoy no usas ninguna de la lista y seguimos con el cierre.</div>
+
+            <div id="uso-bloque">
+              <fieldset class="field" data-required="herramientas_usadas">
+                <legend>7. Marca las herramientas que usas actualmente</legend>
+                <div id="usadas"></div>
+                <p class="counter" id="contador-usadas">Usas 0 de la lista</p>
+                <p class="error-text">Marca al menos una o elige “Ninguna por ahora”.</p>
+              </fieldset>
+
+              <div class="field">
+                <label class="lbl" for="otra_usada">¿Usas alguna otra no listada? <span class="hint">(opcional)</span></label>
+                <input id="otra_usada" name="otra_usada" type="text" maxlength="80" placeholder="Escribe el nombre">
+              </div>
+
+              <div class="field" id="principal-wrap">
+                <label class="lbl" for="herramienta_principal">8. ¿Cuál usas con más frecuencia?</label>
+                <select id="herramienta_principal" name="herramienta_principal">
+                  <option value="">Selecciona</option>
+                </select>
+                <p class="error-text">Elige la herramienta que más usas.</p>
+              </div>
+
+              <fieldset class="field" data-required="freq_uso">
+                <legend>9. En general, ¿con qué frecuencia usas herramientas de IA?</legend>
+                <div class="choice-grid" id="frecuencia">
+                  <label class="choice"><input type="radio" name="freq_uso" value="0" required><span>Nunca</span></label>
+                  <label class="choice"><input type="radio" name="freq_uso" value="1"><span>1–2 veces al mes</span></label>
+                  <label class="choice"><input type="radio" name="freq_uso" value="2"><span>1 vez por semana</span></label>
+                  <label class="choice"><input type="radio" name="freq_uso" value="3"><span>2–3 veces por semana</span></label>
+                  <label class="choice"><input type="radio" name="freq_uso" value="4"><span>Diario</span></label>
+                </div>
+                <p class="error-text">Elige una frecuencia.</p>
+              </fieldset>
+
+              <fieldset class="field" data-required="uso_academico">
+                <legend>10. ¿Usas IA para tareas o trabajos académicos?</legend>
+                <div class="scale">
+                  <label class="choice"><input type="radio" name="uso_academico" value="1" required><strong>1</strong><small>Nunca</small></label>
+                  <label class="choice"><input type="radio" name="uso_academico" value="2"><strong>2</strong><small>Casi nunca</small></label>
+                  <label class="choice"><input type="radio" name="uso_academico" value="3"><strong>3</strong><small>A veces</small></label>
+                  <label class="choice"><input type="radio" name="uso_academico" value="4"><strong>4</strong><small>Frecuente</small></label>
+                  <label class="choice"><input type="radio" name="uso_academico" value="5"><strong>5</strong><small>Casi siempre</small></label>
+                </div>
+                <p class="error-text">Elige una opción del 1 al 5.</p>
+              </fieldset>
+
+              <div class="field" id="antiguedad-wrap" data-required="antiguedad_uso">
+                <label class="lbl" for="antiguedad_uso">11. ¿Desde cuándo usas herramientas de IA?</label>
+                <select id="antiguedad_uso" name="antiguedad_uso">
+                  <option value="">Selecciona</option>
+                  <option>Este semestre</option>
+                  <option>Hace menos de un año</option>
+                  <option>Entre 1 y 2 años</option>
+                  <option>Más de 2 años</option>
+                </select>
+                <p class="error-text">Indica desde cuándo las usas.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="3" data-title="Finalidad">
+            <h2>Para qué te sirven</h2>
+            <p class="lead">Estas respuestas describen el uso, no solo si la herramienta te suena conocida.</p>
+
+            <fieldset class="field" data-required="finalidades">
+              <legend>12. ¿Para qué usas la IA? Marca todo lo que aplique</legend>
+              <div class="chips" id="finalidades">
+                <label class="chip"><input type="checkbox" name="finalidades" value="Tareas y trabajos"><span>Tareas y trabajos</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Estudiar o repasar"><span>Estudiar o repasar</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Programar"><span>Programar</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Diseño e imagen"><span>Diseño e imagen</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Investigación"><span>Investigación</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Redacción y corrección"><span>Redacción y corrección</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Presentaciones"><span>Presentaciones</span></label>
+                <label class="chip"><input type="checkbox" name="finalidades" value="Uso personal, no escolar"><span>Uso personal</span></label>
+              </div>
+              <p class="error-text">Marca al menos una finalidad.</p>
+            </fieldset>
+
+            <div class="field" data-required="actividad_principal">
+              <label class="lbl" for="actividad_principal">13. ¿En qué actividad académica la usas más?</label>
+              <select id="actividad_principal" name="actividad_principal" required>
+                <option value="">Selecciona</option>
+                <option>Tareas y trabajos</option>
+                <option>Estudiar o repasar</option>
+                <option>Programar o hacer código</option>
+                <option>Diseñar imágenes o piezas visuales</option>
+                <option>Investigar o buscar información</option>
+                <option>Redactar o corregir textos</option>
+                <option>Hacer presentaciones</option>
+                <option>No la uso en actividades académicas</option>
+              </select>
+              <p class="error-text">Elige la actividad principal.</p>
+            </div>
+
+            <fieldset class="field" data-required="revisa_contenido">
+              <legend>14. Antes de entregar un trabajo, ¿revisas lo que generó la IA?</legend>
+              <div class="scale">
+                <label class="choice"><input type="radio" name="revisa_contenido" value="1" required><strong>1</strong><small>Nunca</small></label>
+                <label class="choice"><input type="radio" name="revisa_contenido" value="2"><strong>2</strong><small>Casi nunca</small></label>
+                <label class="choice"><input type="radio" name="revisa_contenido" value="3"><strong>3</strong><small>A veces</small></label>
+                <label class="choice"><input type="radio" name="revisa_contenido" value="4"><strong>4</strong><small>Casi siempre</small></label>
+                <label class="choice"><input type="radio" name="revisa_contenido" value="5"><strong>5</strong><small>Siempre</small></label>
+              </div>
+              <p class="error-text">Elige una opción del 1 al 5.</p>
+            </fieldset>
+
+            <fieldset class="field" data-required="ayuda_comprension">
+              <legend>15. ¿La IA te ha ayudado a comprender mejor un tema?</legend>
+              <div class="scale">
+                <label class="choice"><input type="radio" name="ayuda_comprension" value="1" required><strong>1</strong><small>Nada</small></label>
+                <label class="choice"><input type="radio" name="ayuda_comprension" value="2"><strong>2</strong><small>Poco</small></label>
+                <label class="choice"><input type="radio" name="ayuda_comprension" value="3"><strong>3</strong><small>Algo</small></label>
+                <label class="choice"><input type="radio" name="ayuda_comprension" value="4"><strong>4</strong><small>Bastante</small></label>
+                <label class="choice"><input type="radio" name="ayuda_comprension" value="5"><strong>5</strong><small>Mucho</small></label>
+              </div>
+              <p class="error-text">Elige una opción del 1 al 5.</p>
+            </fieldset>
+
+            <fieldset class="field" data-required="mejora_rendimiento">
+              <legend>16. ¿Crees que usar IA mejora tu rendimiento académico?</legend>
+              <div class="scale">
+                <label class="choice"><input type="radio" name="mejora_rendimiento" value="1" required><strong>1</strong><small>En desacuerdo</small></label>
+                <label class="choice"><input type="radio" name="mejora_rendimiento" value="2"><strong>2</strong><small>Poco de acuerdo</small></label>
+                <label class="choice"><input type="radio" name="mejora_rendimiento" value="3"><strong>3</strong><small>Neutral</small></label>
+                <label class="choice"><input type="radio" name="mejora_rendimiento" value="4"><strong>4</strong><small>De acuerdo</small></label>
+                <label class="choice"><input type="radio" name="mejora_rendimiento" value="5"><strong>5</strong><small>Muy de acuerdo</small></label>
+              </div>
+              <p class="error-text">Elige una opción del 1 al 5.</p>
+            </fieldset>
+          </section>
+
+          <section class="step" data-step="4" data-title="Cierre">
+            <h2>Último paso</h2>
+            <p class="lead">Revisa el resumen. Si algo no coincide, puedes regresar.</p>
+
+            <div class="field" data-required="permiso_docentes">
+              <label class="lbl" for="permiso_docentes">17. En tus materias, el uso de IA en tareas suele estar…</label>
+              <select id="permiso_docentes" name="permiso_docentes" required>
+                <option value="">Selecciona</option>
+                <option>Permitido</option>
+                <option>Permitido con condiciones</option>
+                <option>No permitido</option>
+                <option>Depende del docente</option>
+                <option>No lo sé</option>
+              </select>
+              <p class="error-text">Elige una opción.</p>
+            </div>
+
+            <div class="field">
+              <label class="lbl" for="comentario">18. ¿Quieres agregar algo? <span class="hint">(opcional)</span></label>
+              <textarea id="comentario" name="comentario" maxlength="500" placeholder="Una frase basta. Puedes dejarlo vacío."></textarea>
+            </div>
+
+            <div class="review" id="resumen" aria-live="polite"></div>
+          </section>
+
+          <div class="nav">
+            <button type="button" class="btn-back hidden" id="btn-back">Atrás</button>
+            <button type="button" class="btn-next" id="btn-next">Continuar</button>
+            <button type="submit" class="btn-send hidden" id="btn-send">Enviar respuestas</button>
+          </div>
+        </div>
+
+        <div class="thanks" id="thanks">
+          <div class="mark">✓</div>
+          <h2>Gracias por participar</h2>
+          <p class="lead">Tu respuesta quedó registrada. Es anónima y se usará solo para el proyecto de Estadística de la UVP.</p>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    const FORMSPREE_ID = "xwlvvbov";
+
+    const GRUPOS = [
+      { nombre: "Asistentes de texto y estudio", items: ["ChatGPT", "Google Gemini", "Claude", "Perplexity", "Notion AI"] },
+      { nombre: "Programación", items: ["GitHub Copilot", "Codeium"] },
+      { nombre: "Diseño e imagen", items: ["Canva IA", "DALL·E / Midjourney"] },
+      { nombre: "Escritura y corrección", items: ["Grammarly", "LanguageTool", "QuillBot"] },
+      { nombre: "Presentaciones", items: ["Gamma", "Canva (presentaciones con IA)"] }
+    ];
+
+    const FREQ = {
+      "0": "Nunca",
+      "1": "1–2 veces al mes",
+      "2": "1 vez por semana",
+      "3": "2–3 veces por semana",
+      "4": "Diario"
+    };
+
+    const USO_ACAD = {
+      "1": "Nunca",
+      "2": "Casi nunca",
+      "3": "A veces",
+      "4": "Frecuentemente",
+      "5": "Casi siempre"
+    };
+
+    const form = document.getElementById("encuesta");
+    const steps = [...document.querySelectorAll(".step")];
+    let index = 0;
+
+    if (FORMSPREE_ID && FORMSPREE_ID !== "xxxxxxxx") {
+      form.action = "https://formspree.io/f/" + FORMSPREE_ID;
+    } else {
+      document.getElementById("config-banner").classList.add("show");
+    }
+
+    function chips(contenedor, nombre, extra) {
+      const html = GRUPOS.map(grupo => `
+        <p class="group-title">${grupo.nombre}</p>
+        <div class="chips">
+          ${grupo.items.map(item => `
+            <label class="chip">
+              <input type="checkbox" name="${nombre}" value="${item}">
+              <span>${item}</span>
+            </label>`).join("")}
+        </div>`).join("") + `
+        <p class="group-title">Ninguna</p>
+        <div class="chips">
+          <label class="chip">
+            <input type="checkbox" name="${nombre}" value="${extra}" data-ninguna="1">
+            <span>${extra}</span>
+          </label>
+        </div>`;
+      contenedor.innerHTML = html;
+    }
+
+    chips(document.getElementById("conocidas"), "herramientas_conocidas", "Ninguna de la lista");
+    chips(document.getElementById("usadas"), "herramientas_usadas", "Ninguna por ahora");
+
+    function marcadas(nombre) {
+      return [...form.querySelectorAll(`input[name="${nombre}"]:checked`)]
+        .map(el => el.value)
+        .filter(v => v !== "Ninguna de la lista" && v !== "Ninguna por ahora");
+    }
+
+    function aplicarSalto() {
+      const nC = marcadas("herramientas_conocidas").length + (document.getElementById("otra_conocida").value.trim() ? 1 : 0);
+      if (nC === 0) {
+        const nunca = form.querySelector("input[name='freq_uso'][value='0']");
+        const academico = form.querySelector("input[name='uso_academico'][value='1']");
+        if (nunca) nunca.checked = true;
+        if (academico) academico.checked = true;
+      }
+    }
+
+    function syncDerivadas() {
+      const otraC = document.getElementById("otra_conocida").value.trim();
+      const otraU = document.getElementById("otra_usada").value.trim();
+      const nC = marcadas("herramientas_conocidas").length + (otraC ? 1 : 0);
+      const nU = marcadas("herramientas_usadas").length + (otraU ? 1 : 0);
+      document.getElementById("n_conocidas").value = nC;
+      document.getElementById("n_usadas").value = nU;
+      document.getElementById("contador-conocidas").textContent =
+        `Conoces ${marcadas("herramientas_conocidas").length} de la lista${otraC ? " + 1 que escribiste" : ""}`;
+      document.getElementById("contador-usadas").textContent =
+        `Usas ${marcadas("herramientas_usadas").length} de la lista${otraU ? " + 1 que escribiste" : ""}`;
+
+      const freq = form.querySelector("input[name='freq_uso']:checked");
+      document.getElementById("freq_uso_texto").value = freq ? FREQ[freq.value] : "Nunca";
+      const uso = form.querySelector("input[name='uso_academico']:checked");
+      document.getElementById("uso_academico_texto").value = uso ? USO_ACAD[uso.value] : "";
+      return { nC, nU };
+    }
+
+    function exclusividad(nombre) {
+      const boxes = [...form.querySelectorAll(`input[name="${nombre}"]`)];
+      boxes.forEach(box => {
+        box.addEventListener("change", () => {
+          if (box.dataset.ninguna && box.checked) {
+            boxes.forEach(otro => { if (otro !== box) otro.checked = false; });
+          } else if (box.checked) {
+            boxes.forEach(otro => { if (otro.dataset.ninguna) otro.checked = false; });
+          }
+          syncDerivadas();
+          filtrarUsadas();
+        });
+      });
+    }
+
+    exclusividad("herramientas_conocidas");
+    exclusividad("herramientas_usadas");
+
+    function filtrarUsadas() {
+      const conocidas = new Set(marcadas("herramientas_conocidas"));
+      const ningunaConocida = form.querySelector("input[name='herramientas_conocidas'][data-ninguna='1']")?.checked;
+      form.querySelectorAll("input[name='herramientas_usadas']").forEach(box => {
+        if (box.dataset.ninguna) {
+          box.disabled = false;
+          return;
+        }
+        const permitida = !ningunaConocida && conocidas.has(box.value);
+        box.disabled = !permitida;
+        if (!permitida) box.checked = false;
+        box.closest(".chip").classList.toggle("hidden", !permitida);
+      });
+      document.querySelectorAll("#usadas .chips").forEach(grupo => {
+        const visible = [...grupo.querySelectorAll(".chip")].some(chip => !chip.classList.contains("hidden"));
+        grupo.classList.toggle("hidden", !visible);
+        const titulo = grupo.previousElementSibling;
+        if (titulo && titulo.classList.contains("group-title")) titulo.classList.toggle("hidden", !visible);
+      });
+      llenarPrincipal();
+      syncDerivadas();
+      ajustarUso();
+      if (typeof actualizarProgreso === "function") actualizarProgreso();
+    }
+
+    function llenarPrincipal() {
+      const select = document.getElementById("herramienta_principal");
+      const prev = select.value;
+      const opciones = marcadas("herramientas_usadas");
+      const otra = document.getElementById("otra_usada").value.trim();
+      if (otra) opciones.push(otra);
+      select.innerHTML = `<option value="">Selecciona</option>` +
+        opciones.map(op => `<option>${esc(op)}</option>`).join("");
+      if ([...select.options].some(op => op.value === prev)) select.value = prev;
+    }
+
+    document.getElementById("otra_conocida").addEventListener("input", syncDerivadas);
+    document.getElementById("otra_usada").addEventListener("input", () => {
+      llenarPrincipal();
+      syncDerivadas();
+      ajustarUso();
+    });
+    form.querySelectorAll("input[name='freq_uso'], input[name='uso_academico']").forEach(el => {
+      el.addEventListener("change", syncDerivadas);
+    });
+
+    document.getElementById("carrera").addEventListener("change", () => {
+      const otra = document.getElementById("carrera").value === "Otra";
+      document.getElementById("carrera-otra-wrap").classList.toggle("hidden", !otra);
+      document.getElementById("carrera_otra").required = otra;
+    });
+
+    function flow() {
+      const { nC, nU } = syncDerivadas();
+      const yaRespondio = index > 1
+        || form.querySelector("input[name='herramientas_conocidas']:checked")
+        || document.getElementById("otra_conocida").value.trim();
+      if (!yaRespondio) return [0, 1, 2, 3, 4];
+      return [0, 1, nC > 0 ? 2 : null, nU > 0 ? 3 : null, 4].filter(n => n !== null);
+    }
+
+    function actualizarProgreso() {
+      const ruta = flow();
+      const pos = Math.max(0, ruta.indexOf(index));
+      document.getElementById("step-count").textContent = `Paso ${pos + 1} de ${ruta.length}`;
+      document.getElementById("bar").style.width = `${((pos + 1) / ruta.length) * 100}%`;
+      const ultimo = pos === ruta.length - 1;
+      document.getElementById("btn-back").classList.toggle("hidden", pos === 0);
+      document.getElementById("btn-next").classList.toggle("hidden", ultimo);
+      document.getElementById("btn-send").classList.toggle("hidden", !ultimo);
+    }
+
+    function ajustarUso() {
+      const { nU } = syncDerivadas();
+      const hayUso = nU > 0;
+      document.getElementById("principal-wrap").classList.toggle("hidden", !hayUso);
+      document.getElementById("antiguedad-wrap").classList.toggle("hidden", !hayUso);
+      document.getElementById("herramienta_principal").required = hayUso;
+      document.getElementById("antiguedad_uso").required = hayUso;
+    }
+
+    function pintarPaso() {
+      steps.forEach(step => step.classList.toggle("active", Number(step.dataset.step) === index));
+      document.getElementById("step-label").textContent = steps[index].dataset.title;
+      actualizarProgreso();
+      if (index === 2) prepararUso();
+      if (index === 4) {
+        if (syncDerivadas().nC === 0) aplicarSalto();
+        pintarResumen();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function prepararUso() {
+      const { nC } = syncDerivadas();
+      const vacio = nC === 0;
+      document.getElementById("uso-vacio").classList.toggle("hidden", !vacio);
+      document.getElementById("uso-bloque").classList.toggle("hidden", vacio);
+      if (vacio) {
+        form.querySelectorAll("input[name='herramientas_usadas']").forEach(el => { el.checked = false; });
+        const nunca = form.querySelector("input[name='freq_uso'][value='0']");
+        const academico = form.querySelector("input[name='uso_academico'][value='1']");
+        if (nunca) nunca.checked = true;
+        if (academico) academico.checked = true;
+      }
+      filtrarUsadas();
+      ajustarUso();
+    }
+
+    function campoInvalido(field) {
+      field.classList.add("invalid");
+      return false;
+    }
+
+    function validarPaso() {
+      let ok = true;
+      steps[index].querySelectorAll(".field, fieldset.field").forEach(field => field.classList.remove("invalid"));
+
+      if (index === 0) {
+        if (!document.getElementById("carrera").value) ok = campoInvalido(document.getElementById("carrera").closest(".field"));
+        if (document.getElementById("carrera").value === "Otra" && !document.getElementById("carrera_otra").value.trim()) {
+          ok = campoInvalido(document.getElementById("carrera-otra-wrap"));
+        }
+        if (!document.getElementById("semestre").value) ok = campoInvalido(document.getElementById("semestre").closest(".field"));
+        const edad = document.getElementById("edad").value;
+        if (edad && (Number(edad) < 15 || Number(edad) > 80)) ok = campoInvalido(document.getElementById("edad").closest(".field"));
+      }
+
+      if (index === 1) {
+        if (!form.querySelector("input[name='familiaridad_ia']:checked")) ok = campoInvalido(document.getElementById("familiaridad").closest(".field"));
+        const conoce = form.querySelectorAll("input[name='herramientas_conocidas']:checked").length;
+        const otra = document.getElementById("otra_conocida").value.trim();
+        if (!conoce && !otra) ok = campoInvalido(document.getElementById("conocidas").closest(".field"));
+      }
+
+      if (index === 2 && syncDerivadas().nC > 0) {
+        const usa = form.querySelectorAll("input[name='herramientas_usadas']:checked").length;
+        const otra = document.getElementById("otra_usada").value.trim();
+        if (!usa && !otra) ok = campoInvalido(document.getElementById("usadas").closest(".field"));
+        const freqMarcada = form.querySelector("input[name='freq_uso']:checked");
+        const freqField = document.getElementById("frecuencia").closest(".field");
+        if (!freqMarcada) ok = campoInvalido(freqField);
+        else if (syncDerivadas().nU > 0 && freqMarcada.value === "0") {
+          freqField.querySelector(".error-text").textContent = "Si usas alguna herramienta, la frecuencia no puede ser “nunca”.";
+          ok = campoInvalido(freqField);
+        } else {
+          freqField.querySelector(".error-text").textContent = "Elige una frecuencia.";
+        }
+        if (!form.querySelector("input[name='uso_academico']:checked")) ok = campoInvalido(form.querySelector("input[name='uso_academico']").closest(".field"));
+        if (syncDerivadas().nU > 0) {
+          if (!document.getElementById("herramienta_principal").value) ok = campoInvalido(document.getElementById("principal-wrap"));
+          if (!document.getElementById("antiguedad_uso").value) ok = campoInvalido(document.getElementById("antiguedad-wrap"));
+        }
+      }
+
+      if (index === 3) {
+        if (!form.querySelector("input[name='finalidades']:checked")) ok = campoInvalido(document.getElementById("finalidades").closest(".field"));
+        ["actividad_principal", "revisa_contenido", "ayuda_comprension", "mejora_rendimiento"].forEach(nombre => {
+          const el = form.querySelector(`[name="${nombre}"]`);
+          const vacio = el.type === "radio" ? !form.querySelector(`[name="${nombre}"]:checked`) : !el.value;
+          if (vacio) ok = campoInvalido(el.closest(".field"));
+        });
+      }
+
+      if (index === 4 && !document.getElementById("permiso_docentes").value) {
+        ok = campoInvalido(document.getElementById("permiso_docentes").closest(".field"));
+      }
+
+      const primero = steps[index].querySelector(".invalid input, .invalid select, .invalid textarea");
+      if (primero) primero.focus();
+      return ok;
+    }
+
+    function esc(texto) {
+      return String(texto).replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function textoDe(nombre) {
+      const el = form.querySelector(`[name="${nombre}"]`);
+      if (!el) return "—";
+      if (el.type === "radio") {
+        const marcado = form.querySelector(`[name="${nombre}"]:checked`);
+        return marcado ? marcado.value : "—";
+      }
+      if (el.type === "checkbox") {
+        const vals = [...form.querySelectorAll(`[name="${nombre}"]:checked`)].map(n => n.value);
+        return vals.length ? vals.join(", ") : "—";
+      }
+      return el.value.trim() || "—";
+    }
+
+    function pintarResumen() {
+      syncDerivadas();
+      const filas = [
+        ["Carrera", document.getElementById("carrera").value === "Otra" ? document.getElementById("carrera_otra").value : textoDe("carrera")],
+        ["Semestre", textoDe("semestre")],
+        ["Edad", textoDe("edad")],
+        ["Familiaridad (1–5)", textoDe("familiaridad_ia")],
+        ["Herramientas conocidas", textoDe("herramientas_conocidas")],
+        ["Otra conocida", textoDe("otra_conocida")],
+        ["Total conocidas", document.getElementById("n_conocidas").value],
+        ["Herramientas usadas", textoDe("herramientas_usadas")],
+        ["Total usadas", document.getElementById("n_usadas").value],
+        ["Más usada", textoDe("herramienta_principal")],
+        ["Frecuencia", document.getElementById("freq_uso_texto").value + " (" + (textoDe("freq_uso") === "—" ? "0" : textoDe("freq_uso")) + ")"],
+        ["Uso académico (1–5)", textoDe("uso_academico")],
+        ["Antigüedad", textoDe("antiguedad_uso")],
+        ["Finalidades", textoDe("finalidades")],
+        ["Actividad principal", textoDe("actividad_principal")],
+        ["Revisa el contenido (1–5)", textoDe("revisa_contenido")],
+        ["Ayuda a comprender (1–5)", textoDe("ayuda_comprension")],
+        ["Mejora el rendimiento (1–5)", textoDe("mejora_rendimiento")],
+        ["Permiso docente", textoDe("permiso_docentes")]
+      ];
+      document.getElementById("resumen").innerHTML = filas.map(([k, v]) =>
+        `<article><small>${esc(k)}</small><strong>${esc(v)}</strong></article>`).join("");
+    }
+
+    document.getElementById("btn-next").addEventListener("click", () => {
+      if (!validarPaso()) return;
+      const ruta = flow();
+      const pos = ruta.indexOf(index);
+      index = ruta[pos + 1];
+      pintarPaso();
+    });
+
+    document.getElementById("btn-back").addEventListener("click", () => {
+      const ruta = flow();
+      const pos = ruta.indexOf(index);
+      index = ruta[Math.max(0, pos - 1)];
+      pintarPaso();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!validarPaso()) return;
+      if (syncDerivadas().nC === 0) aplicarSalto();
+      syncDerivadas();
+
+      if (!FORMSPREE_ID || FORMSPREE_ID === "xxxxxxxx") {
+        document.getElementById("config-banner").classList.add("show");
+        document.getElementById("config-banner").scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+
+      const boton = document.getElementById("btn-send");
+      boton.disabled = true;
+      boton.textContent = "Enviando…";
+
+      try {
+        const respuesta = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" }
+        });
+        const data = await respuesta.json().catch(() => ({}));
+        if (!respuesta.ok) throw new Error(data.error || "No se pudo enviar");
+        document.getElementById("form-ui").classList.add("hidden");
+        document.getElementById("thanks").classList.add("show");
+      } catch (error) {
+        boton.disabled = false;
+        boton.textContent = "Enviar respuestas";
+        alert("No se pudo enviar el formulario. Revisa tu conexión o el ID de Formspree e inténtalo de nuevo.");
+      }
+    });
+
+    ["permiso_docentes", "comentario"].forEach(id => {
+      document.getElementById(id).addEventListener("input", () => { if (index === 4) pintarResumen(); });
+      document.getElementById(id).addEventListener("change", () => { if (index === 4) pintarResumen(); });
+    });
+
+    filtrarUsadas();
+    pintarPaso();
+  </script>
+</body>
+</html>
